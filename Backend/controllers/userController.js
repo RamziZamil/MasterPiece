@@ -89,6 +89,11 @@ exports.updateUser = async (req, res) => {
             req.body.password = await bcrypt.hash(req.body.password, salt);
         }
 
+        // Handle image upload
+        if (req.file) {
+            req.body.image = req.file.path;
+        }
+
         // Update user
         const updatedUser = await User.findByIdAndUpdate(
             req.params.id,

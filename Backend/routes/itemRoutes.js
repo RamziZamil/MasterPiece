@@ -1,14 +1,23 @@
 const express = require("express");
-const { authorize } = require("../middleware/auth");
 const router = express.Router();
+const {
+  getAllItems,
+  getItem,
+  createItem,
+  updateItem,
+  deleteItem
+} = require("../controllers/itemController");
+const { protect, authorize } = require("../middleware/auth");
+const { upload } = require("../config/cloudinary");
 
-// Controller function to add an item (to be implemented)
-const addItem = (req, res) => {
-  // Logic to add item
-  res.status(201).json({ success: true, message: "Item added successfully" });
-};
+// Public routes
+router.get("/", getAllItems);
+router.get("/:id", getItem);
 
-// Route to add an item, restricted to admin users
-router.post("/add", authorize("admin"), addItem);
+// Protected routes (Admin only)
+router.use(protect);
+router.post("/", authorize("admin"), upload.single('image'), createItem);
+router.put("/:id", authorize("admin"), upload.single('image'), updateItem);
+router.delete("/:id", authorize("admin"), deleteItem);
 
 module.exports = router;

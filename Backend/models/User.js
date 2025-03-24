@@ -42,8 +42,6 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please provide a phone number'],
         validate: {
             validator: function (phone) {
-                // Matches Saudi Arabia phone numbers (you can modify this regex for your needs)
-                // This regex matches formats like: +966501234567 or 0501234567
                 const phoneRegex = /^(\+962|0)(7[0-9]{8})$/;
                 return phoneRegex.test(phone);
             },

@@ -1,16 +1,30 @@
 const express = require("express");
-const { authorize } = require("../middleware/auth");
 const router = express.Router();
+const { protect } = require("../middleware/auth");
+const {
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeFromCart,
+  clearCart
+} = require("../controllers/cartController");
 
-// Controller function to add an item to the cart (to be implemented)
-const addToCart = (req, res) => {
-  // Logic to add item to cart
-  res
-    .status(201)
-    .json({ success: true, message: "Item added to cart successfully" });
-};
+// All routes require authentication
+router.use(protect);
 
-// Route to add an item to the cart
-router.post("/add", authorize("user", "admin"), addToCart);
+// Get user's cart
+router.get("/", getCart);
+
+// Add item to cart
+router.post("/add", addToCart);
+
+// Update cart item quantity
+router.put("/update-quantity", updateCartItem);
+
+// Remove item from cart
+router.delete("/remove/:itemId", removeFromCart);
+
+// Clear cart
+router.delete("/clear", clearCart);
 
 module.exports = router;

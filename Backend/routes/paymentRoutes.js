@@ -1,48 +1,42 @@
 const express = require("express");
-const { authorize } = require("../middleware/auth");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-const Cart = require("../models/Cart");
 const router = express.Router();
+const {
+  createPaymentIntent,
+  handleSuccessfulPayment,
+  getPaymentHistory,
+  refundPayment,
+  confirmPayment,
+  createCheckoutSession,
+  handleWebhook,
+  getOrderStatus,
+  getUserOrders
+} = require("../controllers/paymentController");
+const { protect, authorize } = require("../middleware/auth");
 
-// Controller function to create a payment intent
-const createPaymentIntent = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const cart = await Cart.findOne({ user: userId }).populate("items.item");
+// All payment routes require authentication
+router.use(protect);
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ success: false, message: "Cart is empty" });
-    }
+// Payment routes
+router.post("/create-payment-intent", createPaymentIntent);
+router.post("/success", handleSuccessfulPayment);
+router.get("/history", getPaymentHistory);
 
-    const amount = cart.items.reduce((total, cartItem) => {
-      return total + cartItem.item.pricePerUnit * cartItem.quantity;
-    }, 0);
+// Admin only routes
+router.post("/refund/:paymentIntentId", authorize("admin"), refundPayment);
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100, // Convert to cents
-      currency: "jod",
-      metadata: { integration_check: "accept_a_payment" },
-    });
+// New routes
+router.post("/confirm-payment", confirmPayment);
 
-    res.status(200).json({
-      success: true,
-      clientSecret: paymentIntent.client_secret,
-      cartItems: cart.items,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Payment failed",
-      error: error.message,
-    });
-  }
-};
+// Create a checkout session
+router.post('/create-checkout-session', createCheckoutSession);
 
-// Route to create a payment intent
-router.post(
-  "/create-payment-intent",
-  authorize("user", "admin"),
-  createPaymentIntent
-);
+// Stripe webhook (no auth required as it's called by Stripe)
+router.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+
+// Get user's orders
+router.get('/orders', getUserOrders);
+
+// Get specific order status
+router.get('/orders/:orderId', getOrderStatus);
 
 module.exports = router;

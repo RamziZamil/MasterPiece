@@ -46,6 +46,10 @@ const itemSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  image: {
+    type: String,
+    default: 'default.jpg'
+  }
 });
 
 module.exports = mongoose.model("Item", itemSchema);

@@ -11,7 +11,13 @@ const generateToken = (id) => {
 
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, phoneNumber, address, image } = req.body;
+        // Handle both form-data and JSON
+        const name = req.body.name || req.body['name'];
+        const email = req.body.email || req.body['email'];
+        const password = req.body.password || req.body['password'];
+        const phoneNumber = req.body.phoneNumber || req.body['phoneNumber'];
+        const address = req.body.address || req.body['address'];
+        const image = req.file ? req.file.path : (req.body.image || req.body['image']);
 
         // Additional validation checks
         if (!name || !email || !password || !phoneNumber || !address) {
@@ -37,7 +43,7 @@ exports.register = async (req, res) => {
             password,
             phoneNumber,
             address,
-            image
+            image: image || 'default.jpg'
         });
 
         const token = generateToken(user._id);

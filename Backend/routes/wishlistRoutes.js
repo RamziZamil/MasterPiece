@@ -1,16 +1,20 @@
 const express = require("express");
-const { authorize } = require("../middleware/auth");
 const router = express.Router();
+const {
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+  clearWishlist
+} = require("../controllers/wishlistController");
+const { protect } = require("../middleware/auth");
 
-// Controller function to add an item to the wishlist (to be implemented)
-const addToWishlist = (req, res) => {
-  // Logic to add item to wishlist
-  res
-    .status(201)
-    .json({ success: true, message: "Item added to wishlist successfully" });
-};
+// All wishlist routes require authentication
+router.use(protect);
 
-// Route to add an item to the wishlist
-router.post("/add", authorize("user", "admin"), addToWishlist);
+// Wishlist routes
+router.get("/", getWishlist);
+router.post("/add", addToWishlist);
+router.delete("/remove/:itemId", removeFromWishlist);
+router.delete("/clear", clearWishlist);
 
 module.exports = router;

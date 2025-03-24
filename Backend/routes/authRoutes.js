@@ -2,10 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { register, login, logout, registerAdmin } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
+const { upload } = require('../config/cloudinary');
 
-router.post('/register', register);
+// Register user with optional image upload
+router.post('/register', upload.single('image'), register);
+
+// Login user
 router.post('/login', login);
+
+// Logout user
 router.get('/logout', protect, logout);
-router.post('/register-admin', registerAdmin);
+
+// Register admin (protected route)
+router.post('/register-admin', upload.single('image'), registerAdmin);
 
 module.exports = router; 
