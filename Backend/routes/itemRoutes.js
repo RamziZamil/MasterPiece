@@ -5,7 +5,8 @@ const {
   getItem,
   createItem,
   updateItem,
-  deleteItem
+  deleteItem,
+  getItems,
 } = require("../controllers/itemController");
 const { protect, authorize } = require("../middleware/auth");
 const { upload } = require("../config/cloudinary");
@@ -16,8 +17,8 @@ router.get("/:id", getItem);
 
 // Protected routes (Admin only)
 router.use(protect);
-router.post("/", authorize("admin"), upload.single('image'), createItem);
-router.put("/:id", authorize("admin"), upload.single('image'), updateItem);
+router.post("/", authorize("admin"), upload.single("image"), createItem);
+router.put("/:id", authorize("admin"), upload.single("image"), updateItem);
 router.delete("/:id", authorize("admin"), deleteItem);
 
 module.exports = router;

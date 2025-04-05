@@ -22,7 +22,7 @@ mongoose
 // CORS configuration
 app.use(
   cors({
-    origin: "http://localhost:5175", // Your frontend URL
+    origin: "http://localhost:5173", // Your frontend URL
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -46,6 +46,8 @@ const paymentRoutes = require("./routes/paymentRoutes");
 app.use("/api/payment", paymentRoutes);
 const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
+const testimonialRoutes = require("./routes/testimonialRoutes");
+app.use("/api/testimonials", testimonialRoutes);
 
 // Start server
 app.listen(PORT, () => {
