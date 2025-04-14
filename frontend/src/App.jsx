@@ -4,6 +4,7 @@ import Navbar from "./Components/Navbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { WishlistProvider } from "./context/WishlistContext";
+import { CartProvider } from "./context/CartContext";
 
 // Pages
 import Home from "./Pages/Home";
@@ -16,6 +17,9 @@ import Signup from "./Pages/Signup";
 import Footer from "./Components/Footer";
 import UserProfile from "./Pages/UserProfile";
 import Wishlist from "./Pages/Wishlist";
+import Cart from "./Components/Cart";
+import Checkout from "./Pages/Checkout";
+import OrderConfirmation from "./Pages/OrderConfirmation";
 
 function App() {
   const location = useLocation();
@@ -24,22 +28,30 @@ function App() {
 
   return (
     <WishlistProvider>
-      <div className="App">
-        {showNavbarFooter && <Navbar />}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/userprofile" element={<UserProfile />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-        </Routes>
-        {showNavbarFooter && <Footer />}
-        <ToastContainer />
-      </div>
+      <CartProvider>
+        <div className="App">
+          {showNavbarFooter && <Navbar />}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/userprofile" element={<UserProfile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route
+              path="/order-confirmation/:orderId"
+              element={<OrderConfirmation />}
+            />
+          </Routes>
+          {showNavbarFooter && <Footer />}
+          <ToastContainer />
+        </div>
+      </CartProvider>
     </WishlistProvider>
   );
 }

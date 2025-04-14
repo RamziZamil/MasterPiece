@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import { toast } from "react-toastify"; // Import toast
 import { useWishlist } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Products() {
   const [items, setItems] = useState([]);
@@ -18,6 +21,9 @@ function Products() {
   const colors = [...new Set(items.map((item) => item.color))];
 
   const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -363,18 +369,20 @@ function Products() {
 
 function ProductCard({ item, index }) {
   const { addToWishlist, isInWishlist } = useWishlist();
-  const isWishlisted = isInWishlist(item._id); // Check if item is in wishlist
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const isWishlisted = isInWishlist(item._id);
 
   const handleAddToWishlist = () => {
     addToWishlist({
-      id: item._id, // Ensure consistent ID property
+      id: item._id,
       name: item.name,
-      price: item.pricePerUnit, // Match property name with Wishlist component
+      price: item.pricePerUnit,
       image: item.image,
-      description: item.description, // Optional, for consistency
+      description: item.description,
     });
 
-    // Replace Swal.fire with toast
     toast.success(`${item.name} has been added to your wishlist`, {
       position: "top-right",
       autoClose: 2000,
@@ -384,6 +392,63 @@ function ProductCard({ item, index }) {
       draggable: true,
       progress: undefined,
     });
+  };
+
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      console.log("User not authenticated, redirecting to login");
+      toast.warning("Please log in to add items to cart", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate("/login");
+      return;
+    }
+
+    console.log("Adding item to cart:", item._id);
+
+    try {
+      const result = await addToCart(item._id, 1);
+      console.log("Add to cart result:", result);
+
+      if (result.success) {
+        toast.success(`${item.name} has been added to your cart`, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error(result.message || "Failed to add item to cart", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      toast.error("Something went wrong when adding to cart", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   return (
@@ -477,6 +542,16 @@ function ProductCard({ item, index }) {
               }`}
             />
           </motion.button>
+
+          <motion.button
+            onClick={handleAddToCart}
+            className="p-3 rounded-full bg-white/30 hover:bg-white/50 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.1 }}
+          >
+            <FaShoppingCart className="h-5 w-5 text-white" />
+          </motion.button>
         </motion.div>
       </div>
 
@@ -510,6 +585,7 @@ function ProductCard({ item, index }) {
         </p>
 
         <motion.button
+          onClick={handleAddToCart}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors flex items-center justify-center font-medium shadow-sm"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

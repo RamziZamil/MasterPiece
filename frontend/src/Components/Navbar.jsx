@@ -5,6 +5,7 @@ import { useAuth } from "../AuthContext";
 import { FaUser, FaShoppingCart, FaHeart } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CartIcon from "./CartIcon";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,7 +126,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-3">
             {isAuthenticated ? (
               <>
-                <a href="/userprofile">
+                <Link to="/userprofile">
                   <div
                     className={`rounded-full p-2 ${
                       scrolled ? "hover:bg-indigo-100" : "hover:bg-white/10"
@@ -133,14 +134,16 @@ const Navbar = () => {
                   >
                     <FaUser className="text-xl cursor-pointer" />
                   </div>
-                </a>
-                <div
-                  className={`rounded-full p-2 ${
-                    scrolled ? "hover:bg-indigo-100" : "hover:bg-white/10"
-                  }`}
-                >
-                  <FaShoppingCart className="text-xl cursor-pointer" />
-                </div>
+                </Link>
+                <Link to="/cart">
+                  <div
+                    className={`rounded-full p-2 ${
+                      scrolled ? "hover:bg-indigo-100" : "hover:bg-white/10"
+                    }`}
+                  >
+                    <CartIcon />
+                  </div>
+                </Link>
                 <div
                   onClick={handleWishlistClick}
                   className={`rounded-full p-2 cursor-pointer ${
@@ -262,8 +265,15 @@ const Navbar = () => {
                     <span>My Account</span>
                   </Link>
                   <div className="flex items-center px-3 py-2">
-                    <FaShoppingCart className="text-xl mr-3" />
-                    <span>Cart</span>
+                    <Link to="/cart">
+                      <div
+                        className={`rounded-full p-2 ${
+                          scrolled ? "hover:bg-indigo-100" : "hover:bg-white/10"
+                        }`}
+                      >
+                        <CartIcon />
+                      </div>
+                    </Link>
                   </div>
                   <div
                     className="flex items-center px-3 py-2 cursor-pointer"

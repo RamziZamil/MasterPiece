@@ -1,6 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
+// Configure axios to always include credentials
+axios.defaults.withCredentials = true;
+
 export const AuthContext = createContext(null);
 
 export const useAuth = () => useContext(AuthContext);
@@ -37,13 +40,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token) => {
     localStorage.setItem("token", token);
+
+    // Set the Authorization header for all future requests
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
     try {
       const response = await axios.get(
         "http://localhost:5000/api/users/profile",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       setUser(response.data.user);
       setIsAuthenticated(true);
@@ -57,6 +61,14 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    // Remove the Authorization header
+    delete axios.defaults.headers.common["Authorization"];
+
+    // Call the logout endpoint to clear the cookie
+    axios
+      .get("http://localhost:5000/api/auth/logout")
+      .catch((err) => console.error("Logout error:", err));
+
     setIsAuthenticated(false);
     setUser(null);
   };

@@ -1,77 +1,111 @@
 const mongoose = require("mongoose");
 
-const orderSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema(
+  {
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     items: [
-        {
-            item: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Item",
-                required: true,
-            },
-            quantity: {
-                type: Number,
-                required: true,
-            },
-            price: {
-                type: Number,
-                required: true,
-            },
+      {
+        item: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Item",
+          required: true,
         },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
+      },
     ],
-    totalAmount: {
-        type: Number,
-        required: true,
-    },
-    status: {
-        type: String,
-        enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
-        default: "pending",
-    },
-    paymentStatus: {
-        type: String,
-        enum: ["pending", "paid", "failed", "refunded"],
-        default: "pending",
-    },
-    paymentIntentId: {
-        type: String,
-        required: true,
-    },
     shippingAddress: {
-        street: String,
-        city: String,
-        state: String,
-        zipCode: String,
-        country: String,
+      fullName: {
+        type: String,
+        required: true,
+      },
+      address: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+      zipCode: {
+        type: String,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
     },
     paymentMethod: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
+      enum: ["credit", "paypal", "cash"],
     },
-    trackingNumber: {
-        type: String,
+    paymentResult: {
+      id: String,
+      status: String,
+      update_time: String,
+      email_address: String,
     },
-    notes: {
-        type: String,
+    subtotal: {
+      type: Number,
+      required: true,
+      default: 0.0,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
+    tax: {
+      type: Number,
+      required: true,
+      default: 0.0,
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
+    shipping: {
+      type: Number,
+      required: true,
+      default: 0.0,
     },
-});
+    total: {
+      type: Number,
+      required: true,
+      default: 0.0,
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    paidAt: {
+      type: Date,
+    },
+    isDelivered: {
+      type: Boolean,
+      default: false,
+    },
+    deliveredAt: {
+      type: Date,
+    },
+    status: {
+      type: String,
+      required: true,
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      default: "pending",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-// Update the updatedAt timestamp before saving
-orderSchema.pre("save", function (next) {
-    this.updatedAt = Date.now();
-    next();
-});
-
-module.exports = mongoose.model("Order", orderSchema); 
+module.exports = mongoose.model("Order", orderSchema);
