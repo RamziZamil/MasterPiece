@@ -29,6 +29,10 @@ router.put("/:id/pay", updateOrderToPaid);
 
 // Admin only routes
 router.get("/", authorize("admin"), getAllOrders);
+// Support both PUT and PATCH methods for status updates
+router.put("/:id", authorize("admin"), updateOrderStatus);
+router.patch("/:id", authorize("admin"), updateOrderStatus);
 router.put("/:id/status", authorize("admin"), updateOrderStatus);
+router.patch("/:id/status", authorize("admin"), updateOrderStatus);
 
 module.exports = router;

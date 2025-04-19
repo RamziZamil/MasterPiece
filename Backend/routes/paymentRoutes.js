@@ -9,7 +9,7 @@ const {
   createCheckoutSession,
   handleWebhook,
   getOrderStatus,
-  getUserOrders
+  getUserOrders,
 } = require("../controllers/paymentController");
 const { protect, authorize } = require("../middleware/auth");
 
@@ -28,15 +28,19 @@ router.post("/refund/:paymentIntentId", authorize("admin"), refundPayment);
 router.post("/confirm-payment", confirmPayment);
 
 // Create a checkout session
-router.post('/create-checkout-session', createCheckoutSession);
+router.post("/create-checkout-session", createCheckoutSession);
 
 // Stripe webhook (no auth required as it's called by Stripe)
-router.post('/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  handleWebhook
+);
 
 // Get user's orders
-router.get('/orders', getUserOrders);
+router.get("/orders", getUserOrders);
 
 // Get specific order status
-router.get('/orders/:orderId', getOrderStatus);
+router.get("/orders/:orderId", getOrderStatus);
 
 module.exports = router;

@@ -15,12 +15,28 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Make login request
       const response = await axios.post(
         "http://localhost:5000/api/auth/login",
         { email, password },
         { withCredentials: true }
       );
 
+      if (!response.data || !response.data.data || !response.data.data.token) {
+        throw new Error("No token received from server");
+      }
+
+      // Get the token and user from response
+      const { token, user } = response.data.data;
+
+      // Call login function and wait for it to complete
+      const userData = await login(token);
+
+      if (!userData) {
+        throw new Error("Failed to get user data");
+      }
+
+      // Show success message
       await Swal.fire({
         icon: "success",
         title: "Welcome back!",
@@ -34,17 +50,26 @@ function Login() {
         customClass: { popup: "rounded-lg shadow-xl" },
       });
 
-      // Wait for the login function to complete and set user data
-      await login(response.data.token);
-      navigate("/"); // Navigate after user data is set
+      // Redirect based on user role
+      if (userData.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login error:", error);
+      let errorMessage = "Something went wrong. Please try again.";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       Swal.fire({
         icon: "error",
         title: "Login Failed",
-        text:
-          error.response?.data?.message ||
-          "Something went wrong. Please try again.",
+        text: errorMessage,
         background: "#ffffff",
         iconColor: "#ef4444",
         titleColor: "#1e293b",

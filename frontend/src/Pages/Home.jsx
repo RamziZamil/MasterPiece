@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -20,12 +22,20 @@ import gypsumboardInstallation from "../assets/gypsumboardInstallation.jpg";
 import gypsumboardMaterial from "../assets/gypsumboardMaterial.jpeg";
 
 function Home() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [error, setError] = useState(null);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [statsVisible, setStatsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user && user.role === "admin") {
+      navigate("/admin");
+    }
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,7 +52,7 @@ function Home() {
           console.log("No data in response");
           setError("No data received from server");
         }
-        setLoading(false);
+        setLoadingProducts(false);
       } catch (err) {
         console.error("Detailed error:", {
           message: err.message,
@@ -51,7 +61,7 @@ function Home() {
           data: err.response?.data,
         });
         setError(err.response?.data?.message || "Failed to load products");
-        setLoading(false);
+        setLoadingProducts(false);
       }
     };
 
@@ -493,7 +503,7 @@ function Home() {
               </p>
             </motion.div>
 
-            {loading ? (
+            {loadingProducts ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
               </div>

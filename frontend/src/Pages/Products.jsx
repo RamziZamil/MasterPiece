@@ -506,6 +506,7 @@ function ProductCard({ item, index }) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             transition={{ duration: 0.1 }}
+            onClick={() => navigate(`/products/${item._id}`)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
