@@ -6,13 +6,14 @@ const {
   createItem,
   updateItem,
   deleteItem,
-  getItems,
+  getItemsByCategory,
 } = require("../controllers/itemController");
 const { protect, authorize } = require("../middleware/auth");
 const { upload } = require("../config/cloudinary");
 
 // Public routes
 router.get("/", getAllItems);
+router.get("/category", getItemsByCategory);
 router.get("/:id", getItem);
 
 // Protected routes (Admin only)

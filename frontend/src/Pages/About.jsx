@@ -9,6 +9,7 @@ import gypsumboardInstallation from "../assets/gypsumboardInstallation.jpg";
 import gypsumDesignAbout from "../assets/gypsumDesignAbout.jpg";
 import gypsumProductsAbout from "../assets/gypsumProductsAbout.jpg";
 import ceoAbout from "../assets/ceoAbout.png";
+import SaeedFwaz from "../assets/SaeedFwaz.jpeg";
 
 // Counter component to handle the counting animation
 const Counter = ({ end, duration = 2000 }) => {
@@ -175,10 +176,10 @@ const About = () => {
                 image: ceoAbout,
               },
               {
-                name: "Hamza Ahmad Zamil",
+                name: "Saaed Fawaz ",
                 role: "Head of Product",
                 bio: "Expert in premium material curation and quality assurance.",
-                image: headProductAbout,
+                image: SaeedFwaz,
               },
               {
                 name: "Ramzi Ahmad Zamil",

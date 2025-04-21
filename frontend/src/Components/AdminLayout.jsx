@@ -103,7 +103,7 @@ const AdminLayout = ({ children }) => {
               transition={{ delay: 0.2 }}
               className="text-2xl font-bold text-gray-800"
             >
-              Admin Panel
+              Freedom Road
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
