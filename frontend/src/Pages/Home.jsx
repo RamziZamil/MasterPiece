@@ -539,7 +539,7 @@ function Home() {
                       </p>
                       <div className="flex justify-between items-center">
                         <span className="text-xl font-bold text-indigo-600">
-                          ${product.price || product.pricePerUnit}
+                          JOD {product.price || product.pricePerUnit}
                           {product.pricePerUnit && (
                             <span className="text-sm font-normal text-gray-600">
                               /unit

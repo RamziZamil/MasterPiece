@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../AuthContext";
@@ -183,7 +183,7 @@ function Products() {
                     <div className="flex space-x-3">
                       <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-blue-500">$</span>
+                          <span className="text-blue-500">JOD</span>
                         </div>
                         <motion.input
                           whileFocus={{ scale: 1.02 }}
@@ -202,7 +202,7 @@ function Products() {
                       </div>
                       <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-blue-500">$</span>
+                          <span className="text-blue-500">JOD</span>
                         </div>
                         <motion.input
                           whileFocus={{ scale: 1.02 }}
@@ -386,11 +386,20 @@ function ProductCard({ item, index }) {
     toast.success(`${item.name} has been added to your wishlist`, {
       position: "top-right",
       autoClose: 2000,
-      hideProgressBar: false,
+      hideProgressBar: true,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
-      progress: undefined,
+      style: {
+        background: "#fff5f5",
+        color: "#d23669",
+        border: "1px solid #ffcad4",
+        borderRadius: "8px",
+        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        boxShadow: "0 2px 8px rgba(210, 54, 105, 0.15)",
+      },
+      icon: isWishlisted ? "❤️" : "💝",
+      className: "wishlist-toast",
     });
   };
 
@@ -492,7 +501,7 @@ function ProductCard({ item, index }) {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.07 + index * 0.02, duration: 0.15 }}
         >
-          ${item.pricePerUnit}
+          <span className="text-blue-500">JOD</span> {item.pricePerUnit}
         </motion.div>
 
         <motion.div

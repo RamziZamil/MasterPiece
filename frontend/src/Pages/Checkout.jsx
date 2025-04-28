@@ -65,7 +65,7 @@ const Checkout = () => {
 
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    return subtotal > 100 ? 0 : 15; // Free shipping for orders over $100
+    return subtotal > 100 ? 0 : 15; // Free shipping for orders over JOD 100
   };
 
   const calculateTotal = () => {
@@ -355,7 +355,7 @@ const Checkout = () => {
                       className="h-5 w-5 text-purple-600"
                     />
                     <label htmlFor="cash" className="text-gray-700">
-                      Cash on Delivery
+                      Cash
                     </label>
                   </div>
                 </div>
@@ -447,7 +447,7 @@ const Checkout = () => {
                   onClick={() => setOrderSummaryOpen(!orderSummaryOpen)}
                 >
                   <span>Order Summary ({cart.items.length} items)</span>
-                  <span>${calculateTotal().toFixed(2)}</span>
+                  <span>JOD {calculateTotal().toFixed(2)}</span>
                 </button>
 
                 {orderSummaryOpen && (
@@ -468,11 +468,11 @@ const Checkout = () => {
                               {item.item.name}
                             </h4>
                             <p className="text-gray-600 text-xs">
-                              ${item.item.pricePerUnit} x {item.quantity}
+                              JOD {item.item.pricePerUnit} x {item.quantity}
                             </p>
                           </div>
                           <p className="font-medium">
-                            $
+                            JOD{" "}
                             {(item.item.pricePerUnit * item.quantity).toFixed(
                               2
                             )}
@@ -484,20 +484,20 @@ const Checkout = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Subtotal</span>
-                        <span>${calculateSubtotal().toFixed(2)}</span>
+                        <span>JOD {calculateSubtotal().toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Tax (7%)</span>
-                        <span>${calculateTax().toFixed(2)}</span>
+                        <span>JOD {calculateTax().toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Shipping</span>
-                        <span>${calculateShipping().toFixed(2)}</span>
+                        <span>JOD {calculateShipping().toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between font-semibold pt-2 border-t border-gray-200">
                         <span>Total</span>
                         <span className="text-purple-600">
-                          ${calculateTotal().toFixed(2)}
+                          JOD {calculateTotal().toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -518,7 +518,7 @@ const Checkout = () => {
                     Processing...
                   </div>
                 ) : (
-                  `Complete Order - $${calculateTotal().toFixed(2)}`
+                  `Complete Order - JOD ${calculateTotal().toFixed(2)}`
                 )}
               </button>
             </form>
@@ -545,40 +545,32 @@ const Checkout = () => {
                     <div className="ml-4 flex-1">
                       <h4 className="text-sm font-medium">{item.item.name}</h4>
                       <p className="text-gray-600 text-xs">
-                        ${item.item.pricePerUnit} x {item.quantity}
+                        JOD {item.item.pricePerUnit} x {item.quantity}
                       </p>
                     </div>
                     <p className="font-medium">
-                      ${(item.item.pricePerUnit * item.quantity).toFixed(2)}
+                      JOD {(item.item.pricePerUnit * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span>${calculateSubtotal().toFixed(2)}</span>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Subtotal</span>
+                  <span>JOD {calculateSubtotal().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tax (7%)</span>
-                  <span>${calculateTax().toFixed(2)}</span>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Shipping</span>
+                  <span>JOD {calculateShipping().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
-                  <span>
-                    {calculateShipping() === 0 ? (
-                      <span className="text-green-500">Free</span>
-                    ) : (
-                      `$${calculateShipping().toFixed(2)}`
-                    )}
-                  </span>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Tax</span>
+                  <span>JOD {calculateTax().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between font-bold text-lg pt-3 border-t border-gray-200">
+                <div className="flex justify-between text-lg font-semibold text-gray-900">
                   <span>Total</span>
-                  <span className="text-purple-600">
-                    ${calculateTotal().toFixed(2)}
-                  </span>
+                  <span>JOD {calculateTotal().toFixed(2)}</span>
                 </div>
               </div>
 
@@ -598,7 +590,7 @@ const Checkout = () => {
                   <p className="text-sm text-blue-800">
                     {calculateShipping() === 0
                       ? "Your order qualifies for free shipping!"
-                      : `Add $${(100 - calculateSubtotal()).toFixed(
+                      : `Add JOD ${(100 - calculateSubtotal()).toFixed(
                           2
                         )} more to get free shipping.`}
                   </p>

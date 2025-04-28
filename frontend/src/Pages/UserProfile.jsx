@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../AuthContext";
+import { useAuth } from "../AuthContext";
 import Swal from "sweetalert2";
 
 const EditModal = ({
@@ -230,7 +230,7 @@ const EditModal = ({
 );
 
 const UserProfile = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, login } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -241,14 +241,34 @@ const UserProfile = () => {
   const [formErrors, setFormErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
       fetchUserProfile();
     } else {
       setLoading(false);
+      fetchUserOrders();
     }
   }, [user]);
+
+  const fetchUserOrders = async () => {
+    try {
+      setOrdersLoading(true);
+      const response = await axios.get(
+        "http://localhost:5000/api/orders/myorders",
+        {
+          withCredentials: true,
+        }
+      );
+      setOrders(response.data.data);
+    } catch (error) {
+      console.error("Error fetching user orders:", error);
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
 
   const fetchUserProfile = async () => {
     try {
@@ -262,7 +282,10 @@ const UserProfile = () => {
 
       console.log("Profile API response:", response.data);
       const userData = response.data.user || response.data;
-      setUser(userData);
+      const token = localStorage.getItem("token");
+      if (token) {
+        await login(token);
+      }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching user profile:", error);
@@ -337,7 +360,15 @@ const UserProfile = () => {
           }
         );
 
-        setUser(response.data.user);
+        // Get the updated user data
+        const updatedUser = response.data.user;
+
+        // Update the auth context with the new user data
+        const token = localStorage.getItem("token");
+        if (token) {
+          await login(token);
+        }
+
         setIsModalOpen(false);
 
         await Swal.fire({
@@ -614,6 +645,107 @@ const UserProfile = () => {
             <p className="text-lg pl-7">{user.address || "Not set"}</p>
           </div>
         </div>
+      </div>
+
+      {/* Orders Section */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
+
+        {ordersLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
+            <p className="text-gray-600">You haven't placed any orders yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((order) => (
+              <div
+                key={order._id}
+                className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Order #{order._id.slice(-6)}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Placed on {new Date(order.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      order.status === "delivered"
+                        ? "bg-green-100 text-green-800"
+                        : order.status === "processing"
+                        ? "bg-blue-100 text-blue-800"
+                        : order.status === "shipped"
+                        ? "bg-purple-100 text-purple-800"
+                        : order.status === "cancelled"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {order.status.charAt(0).toUpperCase() +
+                      order.status.slice(1)}
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="space-y-4">
+                    {order.items.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                            <img
+                              src={item.item.image || "/default-item.png"}
+                              alt={item.item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-gray-900">
+                              {item.item.name}
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              Quantity: {item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-gray-900">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm text-gray-500">
+                        Payment Method:{" "}
+                        {order.paymentMethod.charAt(0).toUpperCase() +
+                          order.paymentMethod.slice(1)}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">Total Amount</p>
+                        <p className="text-xl font-bold text-gray-900">
+                          ${order.total.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {isModalOpen && (

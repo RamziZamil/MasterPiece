@@ -165,7 +165,7 @@ const Cart = () => {
                             {cartItem.item.name}
                           </h3>
                           <p className="text-purple-600 font-medium mb-4">
-                            ${cartItem.item.pricePerUnit}
+                            JOD {cartItem.item.pricePerUnit}
                           </p>
 
                           <div className="flex flex-wrap items-center justify-between">
@@ -199,7 +199,7 @@ const Cart = () => {
 
                             <div className="flex items-center">
                               <span className="font-medium mr-6">
-                                ${calculateSubtotal(cartItem)}
+                                JOD {calculateSubtotal(cartItem)}
                               </span>
                               <button
                                 onClick={() =>
@@ -237,7 +237,7 @@ const Cart = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>${calculateTotal().toFixed(2)}</span>
+                    <span>JOD {calculateTotal().toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
@@ -249,7 +249,7 @@ const Cart = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">Total</span>
                     <span className="text-xl font-bold text-purple-600">
-                      ${calculateTotal().toFixed(2)}
+                      JOD {calculateTotal().toFixed(2)}
                     </span>
                   </div>
                 </div>

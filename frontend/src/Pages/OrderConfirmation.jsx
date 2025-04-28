@@ -191,7 +191,7 @@ const OrderConfirmation = () => {
                           {item.quantity}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-gray-700">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          JOD {(item.price * item.quantity).toFixed(2)}
                         </td>
                       </tr>
                     ))}
@@ -242,12 +242,14 @@ const OrderConfirmation = () => {
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">Subtotal</span>
                   <span className="text-gray-800">
-                    ${order.subtotal.toFixed(2)}
+                    JOD {order.subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">Tax</span>
-                  <span className="text-gray-800">${order.tax.toFixed(2)}</span>
+                  <span className="text-gray-800">
+                    JOD {order.tax.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">Shipping</span>
@@ -255,14 +257,14 @@ const OrderConfirmation = () => {
                     {order.shipping === 0 ? (
                       <span className="text-green-500">Free</span>
                     ) : (
-                      `$${order.shipping.toFixed(2)}`
+                      `JOD ${order.shipping.toFixed(2)}`
                     )}
                   </span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-gray-200 mt-2">
                   <span className="font-semibold text-gray-900">Total</span>
                   <span className="font-bold text-purple-700">
-                    ${order.total.toFixed(2)}
+                    JOD {order.total.toFixed(2)}
                   </span>
                 </div>
               </div>

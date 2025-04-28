@@ -91,7 +91,7 @@ const ProductForm = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price Per Unit ($)
+                  Price Per Unit (JOD)
                 </label>
                 <input
                   name="pricePerUnit"
@@ -436,7 +436,7 @@ const Products = () => {
     },
     {
       name: "Price",
-      selector: (row) => `$${row.pricePerUnit}`,
+      selector: (row) => `JOD ${row.pricePerUnit}`,
       sortable: true,
     },
     {
@@ -532,7 +532,7 @@ const Products = () => {
               </h3>
               <div className="flex justify-between items-center mt-2">
                 <span className="text-indigo-600 font-bold">
-                  ${product.pricePerUnit}
+                  JOD {product.pricePerUnit}
                 </span>
                 <span
                   className={`text-sm font-medium ${

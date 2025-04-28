@@ -1,5 +1,8 @@
 import React from "react";
 import { useWishlist } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../AuthContext";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   Heart,
@@ -10,9 +13,45 @@ import {
   Share2,
   ChevronRight,
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 function Wishlist() {
   const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleBuyNow = async (item) => {
+    if (!isAuthenticated) {
+      toast.warning("Please log in to add items to cart", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const result = await addToCart(item.id, 1);
+      if (result.success) {
+        toast.success(`${item.name} has been added to your cart`, {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      } else {
+        toast.error(result.message || "Failed to add item to cart", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      toast.error("Something went wrong when adding to cart", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen py-12">
@@ -109,7 +148,7 @@ function Wishlist() {
 
                       <div className="mt-auto flex flex-wrap items-center justify-between gap-3">
                         <span className="text-lg font-bold text-purple-600">
-                          ${item.price}
+                          JOD {item.price}
                         </span>
 
                         <div className="flex space-x-3">
@@ -121,20 +160,20 @@ function Wishlist() {
                           </button>
 
                           <Link
-                            to={`/product/${item.id}`}
+                            to={`/products/${item.id}`}
                             className="px-4 py-2 border border-purple-600 text-purple-600 hover:bg-purple-50 rounded-full font-medium text-sm flex items-center"
                           >
                             Details
                             <ChevronRight size={16} className="ml-1" />
                           </Link>
 
-                          <Link
-                            to={`/product/${item.id}`}
+                          <button
+                            onClick={() => handleBuyNow(item)}
                             className="px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-full font-medium text-sm flex items-center"
                           >
                             <ShoppingCart size={16} className="mr-1" />
                             Buy Now
-                          </Link>
+                          </button>
                         </div>
                       </div>
                     </div>

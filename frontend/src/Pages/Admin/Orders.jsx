@@ -295,12 +295,7 @@ const Orders = () => {
                       >
                         Date
                       </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        Total
-                      </th>
+
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -342,11 +337,7 @@ const Orders = () => {
                             {new Date(order.createdAt).toLocaleTimeString()}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            ${order.totalAmount}
-                          </div>
-                        </td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <span
@@ -698,10 +689,10 @@ const Orders = () => {
                               {item.quantity}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
-                              ${item.price}
+                              JOD {item.price}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
-                              ${item.quantity * item.price}
+                              JOD {item.quantity * item.price}
                             </td>
                           </tr>
                         ))}
@@ -715,7 +706,7 @@ const Orders = () => {
                             Subtotal:
                           </td>
                           <td className="px-4 py-3">
-                            $
+                            JOD{" "}
                             {selectedOrder.subtotal ||
                               selectedOrder.totalAmount}
                           </td>
@@ -728,7 +719,9 @@ const Orders = () => {
                             >
                               Tax:
                             </td>
-                            <td className="px-4 py-3">${selectedOrder.tax}</td>
+                            <td className="px-4 py-3">
+                              JOD {selectedOrder.tax}
+                            </td>
                           </tr>
                         )}
                         {selectedOrder.shippingFee && (
@@ -740,7 +733,7 @@ const Orders = () => {
                               Shipping:
                             </td>
                             <td className="px-4 py-3">
-                              ${selectedOrder.shippingFee}
+                              JOD {selectedOrder.shippingFee}
                             </td>
                           </tr>
                         )}
@@ -752,7 +745,7 @@ const Orders = () => {
                             Total:
                           </td>
                           <td className="px-4 py-3 font-bold">
-                            ${selectedOrder.totalAmount}
+                            JOD {selectedOrder.totalAmount}
                           </td>
                         </tr>
                       </tfoot>

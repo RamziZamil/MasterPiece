@@ -148,9 +148,9 @@ function ProductDetails() {
                 <h1 className="text-3xl font-bold text-gray-900">
                   {product.name}
                 </h1>
-                <p className="text-2xl font-semibold text-purple-600 mt-2">
-                  ${product.pricePerUnit}
-                </p>
+                <span className="text-2xl font-bold text-blue-600">
+                  JOD {product.pricePerUnit}
+                </span>
               </div>
 
               {product.color && (
@@ -231,9 +231,9 @@ function ProductDetails() {
                       <h3 className="font-bold text-gray-800 truncate">
                         {featuredProduct.name}
                       </h3>
-                      <p className="text-purple-600 font-semibold mt-2">
-                        ${featuredProduct.pricePerUnit}
-                      </p>
+                      <span className="text-xl font-bold text-blue-600">
+                        JOD {featuredProduct.pricePerUnit}
+                      </span>
                     </div>
                   </Link>
                 </motion.div>
