@@ -10,6 +10,8 @@ import {
   Instagram,
 } from "lucide-react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -34,7 +36,7 @@ function Contact() {
         "http://localhost:5000/api/contact-messages",
         formData
       );
-      alert("Your message has been sent! We'll get back to you soon.");
+      toast.success("Your message has been sent! We'll get back to you soon.");
       setFormData({
         name: "",
         phone: "",
@@ -43,7 +45,7 @@ function Contact() {
       });
     } catch (error) {
       console.error("Error sending message:", error);
-      alert("Failed to send message. Please try again later.");
+      toast.error("Failed to send message. Please try again later.");
     }
   };
 
@@ -93,6 +95,7 @@ function Contact() {
 
   return (
     <div className="min-h-screen bg-white">
+      <ToastContainer position="top-center" autoClose={3000} />
       {/* Header Banner */}
       <motion.div
         className="bg-gradient-to-r from-blue-500 to-purple-600 py-16 px-4"
