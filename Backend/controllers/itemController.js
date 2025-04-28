@@ -3,7 +3,15 @@ const Item = require("../models/Item");
 // Get all items
 exports.getAllItems = async (req, res) => {
   try {
-    const items = await Item.find();
+    const limit = parseInt(req.query.limit) || 0;
+    const query = Item.find().sort({ createdAt: -1 });
+
+    if (limit > 0) {
+      query.limit(limit);
+    }
+
+    const items = await query;
+
     res.status(200).json({
       success: true,
       count: items.length,

@@ -25,6 +25,7 @@ import AdminDashboard from "./Pages/AdminDashboard";
 import AdminUsers from "./Pages/Admin/Users";
 import AdminProducts from "./Pages/Admin/Products";
 import AdminOrders from "./Pages/Admin/Orders";
+import ContactMessages from "./Pages/Admin/ContactMessages";
 import ProductDetails from "./Pages/ProductDetails";
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
     "/admin/users",
     "/admin/products",
     "/admin/orders",
+    "/admin/messages",
   ];
   const showNavbarFooter = !hideNavbarFooterRoutes.includes(location.pathname);
 
@@ -63,6 +65,7 @@ function App() {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/products" element={<AdminProducts />} />
               <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/messages" element={<ContactMessages />} />
               <Route
                 path="/order-confirmation/:orderId"
                 element={<OrderConfirmation />}

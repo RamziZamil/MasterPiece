@@ -9,11 +9,12 @@ import {
   Twitter,
   Instagram,
 } from "lucide-react";
+import axios from "axios";
 
 function Contact() {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    phone: "",
     subject: "",
     message: "",
   });
@@ -26,17 +27,24 @@ function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
-    alert("Your message has been sent! We'll get back to you soon.");
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      message: "",
-    });
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/contact-messages",
+        formData
+      );
+      alert("Your message has been sent! We'll get back to you soon.");
+      setFormData({
+        name: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("Failed to send message. Please try again later.");
+    }
   };
 
   // Animation variants
@@ -295,24 +303,26 @@ function Contact() {
                       value={formData.name}
                       onChange={handleChange}
                       className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Enter your full name"
                       required
                     />
                   </motion.div>
 
-                  <motion.div variants={formItemVariants}>
+                  <motion.div className="mb-4" variants={formItemVariants}>
                     <label
-                      htmlFor="email"
+                      htmlFor="phone"
                       className="block text-sm font-medium text-gray-700 mb-1"
                     >
-                      Email Address
+                      Phone Number
                     </label>
                     <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter your phone number"
                       required
                     />
                   </motion.div>
@@ -332,6 +342,7 @@ function Contact() {
                     value={formData.subject}
                     onChange={handleChange}
                     className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="What is this regarding?"
                     required
                   />
                 </motion.div>
@@ -350,6 +361,7 @@ function Contact() {
                     value={formData.message}
                     onChange={handleChange}
                     className="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Type your message here..."
                     required
                   />
                 </motion.div>

@@ -61,3 +61,21 @@ exports.authorize = (...roles) => {
     next();
   };
 };
+
+exports.isAdmin = async (req, res, next) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to access this route. Admin access required.",
+      });
+    }
+    next();
+  } catch (err) {
+    console.error("Admin authorization error:", err);
+    return res.status(403).json({
+      success: false,
+      message: "Not authorized to access this route",
+    });
+  }
+};

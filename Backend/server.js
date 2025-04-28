@@ -55,6 +55,8 @@ const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
 const testimonialRoutes = require("./routes/testimonialRoutes");
 app.use("/api/testimonials", testimonialRoutes);
+const contactMessageRoutes = require("./routes/contactMessageRoutes");
+app.use("/api/contact-messages", contactMessageRoutes);
 
 // Start server
 app.listen(PORT, () => {

@@ -683,7 +683,7 @@ const Orders = () => {
                         {(selectedOrder.items || []).map((item, index) => (
                           <tr key={index}>
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
-                              {item.product?.name || "Unknown Product"}
+                              {item.item?.name || "Unknown Product"}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
                               {item.quantity}
@@ -706,9 +706,7 @@ const Orders = () => {
                             Subtotal:
                           </td>
                           <td className="px-4 py-3">
-                            JOD{" "}
-                            {selectedOrder.subtotal ||
-                              selectedOrder.totalAmount}
+                            JOD {selectedOrder.subtotal || selectedOrder.total}
                           </td>
                         </tr>
                         {selectedOrder.tax && (
@@ -745,7 +743,7 @@ const Orders = () => {
                             Total:
                           </td>
                           <td className="px-4 py-3 font-bold">
-                            JOD {selectedOrder.totalAmount}
+                            JOD {selectedOrder.total}
                           </td>
                         </tr>
                       </tfoot>

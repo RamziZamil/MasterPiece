@@ -260,10 +260,17 @@ exports.handleStripeWebhook = async (req, res) => {
 // Get all orders (Admin only)
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
+    const limit = parseInt(req.query.limit) || 0;
+    const query = Order.find()
       .populate("items.item")
       .populate("user", "name email")
-      .sort("-createdAt");
+      .sort({ createdAt: -1 });
+
+    if (limit > 0) {
+      query.limit(limit);
+    }
+
+    const orders = await query;
 
     res.status(200).json({
       success: true,
@@ -273,7 +280,7 @@ exports.getAllOrders = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Error fetching orders",
+      message: "Server Error",
       error: error.message,
     });
   }
