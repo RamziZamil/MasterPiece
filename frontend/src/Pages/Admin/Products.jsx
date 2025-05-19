@@ -18,6 +18,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 // ProductForm Component
 const ProductForm = ({
@@ -396,7 +397,17 @@ const Products = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action will permanently delete the product.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+    if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:5000/api/items/${id}`, {
           withCredentials: true,
