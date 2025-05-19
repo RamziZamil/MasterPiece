@@ -1,6 +1,19 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { Tab } from "@headlessui/react";
+import {
+  User,
+  Package,
+  Edit3,
+  MapPin,
+  Phone,
+  Mail,
+  Calendar,
+  Clock,
+  ChevronRight,
+} from "lucide-react";
 import Swal from "sweetalert2";
 
 const EditModal = ({
@@ -12,8 +25,13 @@ const EditModal = ({
   loading,
   onClose,
 }) => (
-  <div className="fixed inset-0 backdrop-blur-sm bg-transparent bg-opacity-50 flex items-center justify-center z-50 transition-all duration-300">
-    <div className="bg-white p-8 rounded-lg w-full max-w-md shadow-2xl transform transition-all duration-300 animate-[fadeIn_0.3s_ease-out,slideUp_0.3s_ease-out]">
+  <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-50">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl m-4"
+    >
       {/* Modal header */}
       <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
         <svg
@@ -225,13 +243,72 @@ const EditModal = ({
           </button>
         </div>
       </form>
-    </div>
+    </motion.div>
   </div>
+);
+
+// Order Card Component
+const OrderCard = ({ order }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+  >
+    <div className="p-6">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <p className="text-sm text-gray-500 flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            {new Date(order.createdAt).toLocaleDateString()}
+          </p>
+          <h3 className="text-lg font-semibold text-gray-900 mt-1">
+            Order #{order._id.slice(-6)}
+          </h3>
+        </div>
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            order.status === "pending"
+              ? "bg-yellow-100 text-yellow-800"
+              : order.status === "completed"
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-800"
+          }`}
+        >
+          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+        </span>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-gray-600 flex items-center gap-2">
+          <Package className="w-4 h-4" />
+          {order.items?.length || 0} items
+        </p>
+        {order.estimatedDelivery && (
+          <p className="text-gray-600 flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Estimated delivery:{" "}
+            {new Date(order.estimatedDelivery).toLocaleDateString()}
+          </p>
+        )}
+      </div>
+
+      <div className="mt-4 flex justify-between items-center">
+        <p className="text-lg font-bold text-gray-900">
+          JOD {order.total?.toFixed(2) || "0.00"}
+        </p>
+        <button className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 transition-colors">
+          View Details
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  </motion.div>
 );
 
 const UserProfile = () => {
   const { user, login } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -262,9 +339,21 @@ const UserProfile = () => {
           withCredentials: true,
         }
       );
-      setOrders(response.data.data);
+
+      console.log("Orders response:", response.data); // Debug log
+
+      if (response.data && Array.isArray(response.data.data)) {
+        setOrders(response.data.data);
+      } else if (response.data && Array.isArray(response.data)) {
+        setOrders(response.data);
+      } else {
+        console.error("Unexpected orders data format:", response.data);
+        setOrders([]);
+      }
     } catch (error) {
       console.error("Error fetching user orders:", error);
+      setError("Failed to load orders. Please try again later.");
+      setOrders([]);
     } finally {
       setOrdersLoading(false);
     }
@@ -521,244 +610,210 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto my-12 px-4">
-      {/* Removed the outer white frame with shadow */}
-      {/* Header section with cover photo */}
-      <div className="h-48 bg-gradient-to-r from-indigo-300 to-purple-400 relative rounded-t-2xl">
-        {/* User picture overlapping the banner */}
-        <div className="absolute -bottom-20 left-10">
-          <div className="rounded-full border-4 border-white overflow-hidden h-40 w-40 shadow-lg">
-            <img
-              src={user.image || "/default-avatar.png"}
-              alt="Profile"
-              className="h-full w-full object-cover"
-            />
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white/20 shadow-xl">
+                <img
+                  src={user?.image || "https://via.placeholder.com/200"}
+                  alt={user?.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="absolute bottom-0 right-0 bg-white text-indigo-600 p-2 rounded-full shadow-lg hover:bg-indigo-50 transition-colors"
+              >
+                <Edit3 className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="text-center md:text-left">
+              <h1 className="text-3xl font-bold mb-2">{user?.name}</h1>
+              <div className="flex flex-col md:flex-row gap-4 text-indigo-100">
+                {user?.email && (
+                  <span className="flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    {user.email}
+                  </span>
+                )}
+                {user?.phoneNumber && (
+                  <span className="flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    {user.phoneNumber}
+                  </span>
+                )}
+                {user?.address && (
+                  <span className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    {user.address}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content section */}
-      <div className="pt-24 pb-8 px-8 bg-white rounded-b-2xl">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">
-            {user.name || "Not set"}
-          </h1>
-
-          {/* Moved edit button here next to the name */}
-          <button
-            onClick={() => {
-              setFormData({
-                name: user.name || "",
-                address: user.address || "",
-                phoneNumber: user.phoneNumber || "",
-                image: null,
-              });
-              setIsModalOpen(true);
-            }}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-md flex items-center"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <Tab.Group selectedIndex={selectedTab} onChange={setSelectedTab}>
+          <Tab.List className="flex space-x-1 rounded-xl bg-white p-1 shadow-md mb-8">
+            <Tab
+              className={({ selected }) =>
+                `w-full rounded-lg py-3 text-sm font-medium leading-5 transition-colors
+                ${
+                  selected
+                    ? "bg-indigo-600 text-white shadow"
+                    : "text-gray-600 hover:bg-indigo-50"
+                }`
+              }
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
-            Edit Profile
-          </button>
-        </div>
+              <div className="flex items-center justify-center gap-2">
+                <User className="w-4 h-4" />
+                Profile
+              </div>
+            </Tab>
+            <Tab
+              className={({ selected }) =>
+                `w-full rounded-lg py-3 text-sm font-medium leading-5 transition-colors
+                ${
+                  selected
+                    ? "bg-indigo-600 text-white shadow"
+                    : "text-gray-600 hover:bg-indigo-50"
+                }`
+              }
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Package className="w-4 h-4" />
+                Orders
+              </div>
+            </Tab>
+          </Tab.List>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center mb-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-indigo-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              <h3 className="font-medium text-gray-600">Email</h3>
-            </div>
-            <p className="text-lg pl-7">{user.email || "Not set"}</p>
-          </div>
-
-          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center mb-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-indigo-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                />
-              </svg>
-              <h3 className="font-medium text-gray-600">Phone Number</h3>
-            </div>
-            <p className="text-lg pl-7">{user.phoneNumber || "Not set"}</p>
-          </div>
-
-          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-md transition-shadow md:col-span-2">
-            <div className="flex items-center mb-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2 text-indigo-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <h3 className="font-medium text-gray-600">Address</h3>
-            </div>
-            <p className="text-lg pl-7">{user.address || "Not set"}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Orders Section */}
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h2>
-
-        {ordersLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          </div>
-        ) : orders.length === 0 ? (
-          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
-            <p className="text-gray-600">You haven't placed any orders yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {orders.map((order) => (
-              <div
-                key={order._id}
-                className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-4">
+          <Tab.Panels>
+            {/* Profile Panel */}
+            <Tab.Panel>
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      Order #{order._id.slice(-6)}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      Placed on {new Date(order.createdAt).toLocaleDateString()}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Name
+                    </label>
+                    <p className="text-gray-900">{user?.name}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <p className="text-gray-900">{user?.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number
+                    </label>
+                    <p className="text-gray-900">
+                      {user?.phoneNumber || "Not provided"}
                     </p>
                   </div>
-                  <div
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      order.status === "delivered"
-                        ? "bg-green-100 text-green-800"
-                        : order.status === "processing"
-                        ? "bg-blue-100 text-blue-800"
-                        : order.status === "shipped"
-                        ? "bg-purple-100 text-purple-800"
-                        : order.status === "cancelled"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {order.status.charAt(0).toUpperCase() +
-                      order.status.slice(1)}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Address
+                    </label>
+                    <p className="text-gray-900">
+                      {user?.address || "Not provided"}
+                    </p>
                   </div>
                 </div>
-
-                <div className="border-t border-gray-200 pt-4">
-                  <div className="space-y-4">
-                    {order.items.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
-                            <img
-                              src={item.item.image || "/default-item.png"}
-                              alt={item.item.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900">
-                              {item.item.name}
-                            </h4>
-                            <p className="text-sm text-gray-500">
-                              Quantity: {item.quantity}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium text-gray-900">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-500">
-                        Payment Method:{" "}
-                        {order.paymentMethod.charAt(0).toUpperCase() +
-                          order.paymentMethod.slice(1)}
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500">Total Amount</p>
-                        <p className="text-xl font-bold text-gray-900">
-                          ${order.total.toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mt-8">
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    Edit Profile
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            </Tab.Panel>
+
+            {/* Orders Panel */}
+            <Tab.Panel>
+              <div className="space-y-6">
+                {ordersLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading orders...</p>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-12 bg-white rounded-2xl shadow-md">
+                    <div className="text-red-500 mb-4">
+                      <svg
+                        className="w-12 h-12 mx-auto"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Error Loading Orders
+                    </h3>
+                    <p className="text-gray-600 mb-4">{error}</p>
+                    <button
+                      onClick={fetchUserOrders}
+                      className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                ) : orders.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {orders.map((order) => (
+                      <OrderCard key={order._id} order={order} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 bg-white rounded-2xl shadow-md">
+                    <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      No Orders Yet
+                    </h3>
+                    <p className="text-gray-600">
+                      When you make your first order, it will appear here.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </div>
 
-      {isModalOpen && (
-        <EditModal
-          formData={formData}
-          formErrors={formErrors}
-          handleInputChange={handleInputChange}
-          handleImageChange={handleImageChange}
-          handleSubmit={handleSubmit}
-          loading={loading}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+      {/* Edit Profile Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <EditModal
+            formData={formData}
+            formErrors={formErrors}
+            handleInputChange={handleInputChange}
+            handleImageChange={handleImageChange}
+            handleSubmit={handleSubmit}
+            loading={loading}
+            onClose={() => setIsModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

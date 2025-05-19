@@ -25,6 +25,9 @@ function Products() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 8;
+
   useEffect(() => {
     const fetchItems = async () => {
       setIsLoading(true);
@@ -70,6 +73,18 @@ function Products() {
     }
 
     setFilteredItems(result);
+  }, [searchQuery, priceRange, selectedColor, items]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredItems.length / productsPerPage);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * productsPerPage,
+    currentPage * productsPerPage
+  );
+
+  // Reset to first page when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [searchQuery, priceRange, selectedColor, items]);
 
   const resetFilters = () => {
@@ -355,11 +370,57 @@ function Products() {
               </motion.button>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredItems.map((item, index) => (
-                <ProductCard key={item._id} item={item} index={index} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {paginatedItems.map((item, index) => (
+                  <ProductCard key={item._id} item={item} index={index} />
+                ))}
+              </div>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center mt-10 space-x-2">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 rounded-lg font-medium border transition-colors ${
+                      currentPage === 1
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-indigo-600 hover:bg-indigo-50 border-indigo-200"
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-4 py-2 rounded-lg font-medium border transition-colors ${
+                          currentPage === page
+                            ? "bg-indigo-600 text-white border-indigo-600"
+                            : "bg-white text-indigo-600 hover:bg-indigo-50 border-indigo-200"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
+                  <button
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 rounded-lg font-medium border transition-colors ${
+                      currentPage === totalPages
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-white text-indigo-600 hover:bg-indigo-50 border-indigo-200"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </section>
       </motion.main>

@@ -629,13 +629,9 @@ function Home() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
-                    <img
-                      src={testimonials[activeTestimonial].user.image}
-                      alt={testimonials[activeTestimonial].user.name}
-                      className="w-16 h-16 rounded-full object-cover mb-4"
-                    />
                     <h4 className="font-bold text-lg">
-                      {testimonials[activeTestimonial].user.name}
+                      {testimonials[activeTestimonial].user?.name ||
+                        "Anonymous"}
                     </h4>
                     <p className="text-gray-500 text-sm">
                       {new Date(
