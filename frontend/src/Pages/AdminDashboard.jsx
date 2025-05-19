@@ -335,7 +335,7 @@ function AdminDashboard() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
-                className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 shadow-sm transition-all flex items-center space-x-2"
+                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-full text-white text-sm font-medium transition-colors duration-200 cursor-pointer"
               >
                 <span>Logout</span>
               </motion.button>

@@ -248,6 +248,23 @@ const EditModal = ({
 );
 
 // Order Card Component
+const getStatusColor = (status) => {
+  switch (status) {
+    case "delivered":
+      return "bg-green-100 text-green-800";
+    case "pending":
+      return "bg-yellow-100 text-yellow-800";
+    case "processing":
+      return "bg-blue-100 text-blue-800";
+    case "shipped":
+      return "bg-purple-100 text-purple-800";
+    case "cancelled":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
 const OrderCard = ({ order }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -266,13 +283,9 @@ const OrderCard = ({ order }) => (
           </h3>
         </div>
         <span
-          className={`px-3 py-1 rounded-full text-sm font-medium ${
-            order.status === "pending"
-              ? "bg-yellow-100 text-yellow-800"
-              : order.status === "completed"
-              ? "bg-green-100 text-green-800"
-              : "bg-gray-100 text-gray-800"
-          }`}
+          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+            order.status
+          )}`}
         >
           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
         </span>
@@ -296,10 +309,6 @@ const OrderCard = ({ order }) => (
         <p className="text-lg font-bold text-gray-900">
           JOD {order.total?.toFixed(2) || "0.00"}
         </p>
-        <button className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 transition-colors">
-          View Details
-          <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
     </div>
   </motion.div>

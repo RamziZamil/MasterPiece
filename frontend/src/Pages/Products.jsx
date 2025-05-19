@@ -16,9 +16,11 @@ function Products() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-  const colors = [...new Set(items.map((item) => item.color))];
+  const categories = [
+    ...new Set(items.map((item) => item.category).filter(Boolean)),
+  ];
 
   const { addToWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
@@ -68,12 +70,12 @@ function Products() {
       );
     }
 
-    if (selectedColor) {
-      result = result.filter((item) => item.color === selectedColor);
+    if (selectedCategory) {
+      result = result.filter((item) => item.category === selectedCategory);
     }
 
     setFilteredItems(result);
-  }, [searchQuery, priceRange, selectedColor, items]);
+  }, [searchQuery, priceRange, selectedCategory, items]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredItems.length / productsPerPage);
@@ -85,12 +87,12 @@ function Products() {
   // Reset to first page when filters/search change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, priceRange, selectedColor, items]);
+  }, [searchQuery, priceRange, selectedCategory, items]);
 
   const resetFilters = () => {
     setSearchQuery("");
     setPriceRange({ min: "", max: "" });
-    setSelectedColor("");
+    setSelectedCategory("");
   };
 
   return (
@@ -198,13 +200,13 @@ function Products() {
                     <div className="flex space-x-3">
                       <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-blue-500">JOD</span>
+                          <span className="text-blue-500 ml-1">JOD</span>
                         </div>
                         <motion.input
                           whileFocus={{ scale: 1.02 }}
                           transition={{ duration: 0.1 }}
                           type="number"
-                          className="w-full pl-8 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-blue-400 focus:border-blue-400 text-gray-800 placeholder-gray-400"
+                          className="w-full pl-12 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-blue-400 focus:border-blue-400 text-gray-800 placeholder-gray-400"
                           placeholder="Min"
                           value={priceRange.min}
                           onChange={(e) =>
@@ -217,13 +219,13 @@ function Products() {
                       </div>
                       <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <span className="text-blue-500">JOD</span>
+                          <span className="text-blue-500 ml-1">JOD</span>
                         </div>
                         <motion.input
                           whileFocus={{ scale: 1.02 }}
                           transition={{ duration: 0.1 }}
                           type="number"
-                          className="w-full pl-8 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-purple-400 focus:border-purple-400 text-gray-800 placeholder-gray-400"
+                          className="w-full pl-12 pr-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-purple-400 focus:border-purple-400 text-gray-800 placeholder-gray-400"
                           placeholder="Max"
                           value={priceRange.max}
                           onChange={(e) =>
@@ -243,19 +245,19 @@ function Products() {
                     transition={{ delay: 0.07, duration: 0.15 }}
                   >
                     <h3 className="text-sm font-semibold text-purple-700 mb-3">
-                      Color
+                      Category
                     </h3>
                     <motion.select
                       whileFocus={{ scale: 1.02 }}
                       transition={{ duration: 0.1 }}
                       className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-blue-400 focus:border-blue-400 text-gray-800"
-                      value={selectedColor}
-                      onChange={(e) => setSelectedColor(e.target.value)}
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
                     >
-                      <option value="">All Colors</option>
-                      {colors.map((color) => (
-                        <option key={color} value={color}>
-                          {color}
+                      <option value="">All Categories</option>
+                      {categories.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
                         </option>
                       ))}
                     </motion.select>
@@ -631,25 +633,7 @@ function ProductCard({ item, index }) {
           <h3 className="font-medium text-gray-900 line-clamp-1">
             {item.name}
           </h3>
-
-          {item.color && (
-            <motion.span
-              className="inline-block h-6 w-6 rounded-full ml-2 border-2 border-white"
-              style={{ backgroundColor: item.color.toLowerCase() }}
-              title={item.color}
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.1 }}
-            ></motion.span>
-          )}
         </div>
-
-        {item.color && (
-          <div className="mb-2">
-            <span className="inline-block text-xs text-gray-500">
-              {item.color}
-            </span>
-          </div>
-        )}
 
         <p className="text-sm text-gray-600 line-clamp-2 mb-4 min-h-12">
           {item.description}

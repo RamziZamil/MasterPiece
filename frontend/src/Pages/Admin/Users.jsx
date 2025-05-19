@@ -396,18 +396,6 @@ const Users = () => {
             >
               Users Management
             </motion.h1>
-            <motion.button
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleEdit("new")}
-              className="flex items-center space-x-2 px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mt-4 md:mt-0"
-            >
-              <FaPlus />
-              <span>Add New User</span>
-            </motion.button>
           </div>
 
           {/* Stats Summary */}
